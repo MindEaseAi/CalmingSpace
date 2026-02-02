@@ -15,38 +15,100 @@ html, body {
   overflow: hidden;
 }
 
+/* Aurora */
+#aurora {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(120deg,
+    #5faaff55,
+    #8affc155,
+    #c58cff55);
+  filter: blur(90px);
+  animation: aurora 30s linear infinite;
+  z-index: 0;
+}
+@keyframes aurora {
+  0% { transform: translateX(-40%); }
+  50% { transform: translateX(40%); }
+  100% { transform: translateX(-40%); }
+}
+
 .container {
   position: relative;
   z-index: 2;
-  max-width: 500px;
-  margin: 15vh auto;
+  max-width: 520px;
+  margin: 8vh auto;
   text-align: center;
   padding: 20px;
 }
 
-h1 {
-  font-weight: 500;
-  margin-bottom: 10px;
+/* Avatar */
+.avatar {
+  width: 130px;
+  height: 130px;
+  margin: 0 auto 25px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #cfe3ff, #7b9cff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: float 6s ease-in-out infinite;
 }
 
-p {
-  opacity: 0.85;
+.face {
+  width: 60px;
+  height: 40px;
+  position: relative;
+}
+
+.eye {
+  width: 10px;
+  height: 10px;
+  background: #000;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  animation: blink 6s infinite;
+}
+.eye.left { left: 5px; }
+.eye.right { right: 5px; }
+
+.mouth {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 30px;
+  height: 14px;
+  border-radius: 0 0 20px 20px;
+  border: 3px solid #000;
+  border-top: none;
+  transform: translateX(-50%);
+}
+
+@keyframes blink {
+  0%, 96%, 100% { transform: scaleY(1); }
+  97% { transform: scaleY(0.1); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-18px); }
+  100% { transform: translateY(0); }
 }
 
 textarea {
   width: 100%;
   height: 80px;
-  border-radius: 25px;
+  border-radius: 22px;
   border: none;
-  padding: 16px;
+  padding: 15px;
   font-size: 16px;
   resize: none;
-  outline: none;
 }
 
 button {
   margin-top: 15px;
-  padding: 14px 34px;
+  padding: 14px 36px;
   border-radius: 30px;
   border: none;
   background: #7faaff;
@@ -55,35 +117,37 @@ button {
   cursor: pointer;
 }
 
-.bubble {
-  width: 90px;
-  height: 90px;
-  margin: 0 auto 25px;
+#activity {
+  margin-top: 30px;
+  min-height: 140px;
+}
+
+.breath {
+  font-size: 28px;
+  animation: breathe 6s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+
+.glow {
+  width: 70px;
+  height: 70px;
+  background: #8affc1;
   border-radius: 50%;
-  background: radial-gradient(circle, #bcdcff, #6f8cff);
-  animation: float 6s ease-in-out infinite;
+  margin: 30px auto;
+  box-shadow: 0 0 40px #8affc1;
+  animation: pulse 4s infinite;
+  cursor: pointer;
 }
 
-@keyframes float {
-  0% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-20px) scale(1.08); }
-  100% { transform: translateY(0) scale(1); }
-}
-
-#aurora {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  background:
-    linear-gradient(120deg, #5faaff55, #8affc155, #c58cff55);
-  filter: blur(90px);
-  animation: aurora 25s linear infinite;
-}
-
-@keyframes aurora {
-  0% { transform: translateX(-40%); }
-  50% { transform: translateX(40%); }
-  100% { transform: translateX(-40%); }
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.35); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.7; }
 }
 </style>
 </head>
@@ -93,64 +157,105 @@ button {
 <div id="aurora"></div>
 
 <div class="container">
-  <div class="bubble" id="bubble"></div>
+  <div class="avatar">
+    <div class="face">
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+      <div class="mouth"></div>
+    </div>
+  </div>
 
   <h1>Calm Space</h1>
-  <p>Share how you feel. A new calm begins.</p>
+  <p>I’m here with you. We’ll slow down together.</p>
 
-  <textarea id="emotion" placeholder="I feel overwhelmed..."></textarea>
-  <br>
-  <button onclick="startCalm()">Begin Calm</button>
+  <textarea id="emotion" placeholder="How are you feeling?"></textarea><br>
+  <button onclick="startSession()">Begin Calm</button>
+
+  <div id="activity"></div>
 </div>
 
 <script>
 let audioCtx;
-let source;
-let gain;
+let nodes = [];
+let activityStep = 0;
 
-function startCalm() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
+function startSession() {
+  stopSound();
+  startGeneratedSound();
+  activityStep = 0;
+  nextActivity();
+}
 
-  if (source) {
-    source.stop();
-  }
+/* FULLY GENERATED SOUND — DIFFERENT EVERY SESSION */
+function startGeneratedSound() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  // Create soothing ambient noise
-  const bufferSize = audioCtx.sampleRate * 2;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  // Noise base
+  const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 2, audioCtx.sampleRate);
   const data = buffer.getChannelData(0);
-
-  for (let i = 0; i < bufferSize; i++) {
+  for (let i = 0; i < data.length; i++) {
     data[i] = (Math.random() * 2 - 1) * 0.03;
   }
 
-  source = audioCtx.createBufferSource();
-  source.buffer = buffer;
-  source.loop = true;
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buffer;
+  noise.loop = true;
 
+  // Random oscillator (AI "mood")
+  const osc = audioCtx.createOscillator();
+  osc.type = ["sine", "triangle"][Math.floor(Math.random() * 2)];
+  osc.frequency.value = 80 + Math.random() * 120;
+
+  // Filter
   const filter = audioCtx.createBiquadFilter();
   filter.type = "lowpass";
-  filter.frequency.value = 800 + Math.random() * 400;
+  filter.frequency.value = 400 + Math.random() * 600;
 
-  gain = audioCtx.createGain();
+  // Gain
+  const gain = audioCtx.createGain();
   gain.gain.value = 0.25;
 
-  source.connect(filter);
+  noise.connect(filter);
+  osc.connect(filter);
   filter.connect(gain);
   gain.connect(audioCtx.destination);
 
-  source.start();
+  noise.start();
+  osc.start();
 
-  resetBubble();
+  nodes.push(noise, osc, filter, gain);
 }
 
-function resetBubble() {
-  const bubble = document.getElementById("bubble");
-  bubble.style.animation = "none";
-  bubble.offsetHeight;
-  bubble.style.animation = "float 6s ease-in-out infinite";
+function stopSound() {
+  if (audioCtx) {
+    audioCtx.close();
+    audioCtx = null;
+    nodes = [];
+  }
+}
+
+/* CALM ACTIVITIES */
+function nextActivity() {
+  const area = document.getElementById("activity");
+  area.innerHTML = "";
+
+  if (activityStep === 0) {
+    area.innerHTML = `<div class="breath">Breathe slowly</div>`;
+    setTimeout(() => { activityStep++; nextActivity(); }, 12000);
+  }
+  else if (activityStep === 1) {
+    area.innerHTML = `<p>Touch the light when you’re ready</p>`;
+    const glow = document.createElement("div");
+    glow.className = "glow";
+    glow.onclick = () => {
+      activityStep++;
+      nextActivity();
+    };
+    area.appendChild(glow);
+  }
+  else {
+    area.innerHTML = `<p>You can stay here as long as you like.</p>`;
+  }
 }
 </script>
 
