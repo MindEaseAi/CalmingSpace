@@ -15,14 +15,10 @@ html, body {
   overflow: hidden;
 }
 
-/* Aurora */
 #aurora {
   position: fixed;
   inset: 0;
-  background: linear-gradient(120deg,
-    #5faaff55,
-    #8affc155,
-    #c58cff55);
+  background: linear-gradient(120deg,#5faaff55,#8affc155,#c58cff55);
   filter: blur(90px);
   animation: aurora 30s linear infinite;
   z-index: 0;
@@ -36,28 +32,29 @@ html, body {
 .container {
   position: relative;
   z-index: 2;
-  max-width: 520px;
-  margin: 8vh auto;
+  max-width: 560px;
+  margin: 6vh auto;
   text-align: center;
   padding: 20px;
 }
 
 /* Avatar */
 .avatar {
-  width: 130px;
-  height: 130px;
-  margin: 0 auto 25px;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 20px;
   border-radius: 50%;
-  background: radial-gradient(circle, #cfe3ff, #7b9cff);
+  background: radial-gradient(circle,#d7e7ff,#7b9cff);
   display: flex;
   align-items: center;
   justify-content: center;
   animation: float 6s ease-in-out infinite;
+  box-shadow: 0 0 40px rgba(140,180,255,0.4);
 }
 
 .face {
-  width: 60px;
-  height: 40px;
+  width: 64px;
+  height: 44px;
   position: relative;
 }
 
@@ -70,8 +67,8 @@ html, body {
   top: 0;
   animation: blink 6s infinite;
 }
-.eye.left { left: 5px; }
-.eye.right { right: 5px; }
+.eye.left { left: 6px; }
+.eye.right { right: 6px; }
 
 .mouth {
   position: absolute;
@@ -86,29 +83,18 @@ html, body {
 }
 
 @keyframes blink {
-  0%, 96%, 100% { transform: scaleY(1); }
-  97% { transform: scaleY(0.1); }
+  0%,96%,100%{transform:scaleY(1)}
+  97%{transform:scaleY(0.1)}
 }
 
 @keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-18px); }
-  100% { transform: translateY(0); }
-}
-
-textarea {
-  width: 100%;
-  height: 80px;
-  border-radius: 22px;
-  border: none;
-  padding: 15px;
-  font-size: 16px;
-  resize: none;
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-16px)}
+  100%{transform:translateY(0)}
 }
 
 button {
-  margin-top: 15px;
-  padding: 14px 36px;
+  padding: 14px 38px;
   border-radius: 30px;
   border: none;
   background: #7faaff;
@@ -117,37 +103,25 @@ button {
   cursor: pointer;
 }
 
-#activity {
-  margin-top: 30px;
-  min-height: 140px;
+#passage {
+  margin-top: 25px;
+  font-size: 18px;
+  line-height: 1.7;
 }
 
-.breath {
-  font-size: 28px;
-  animation: breathe 6s ease-in-out infinite;
-}
-
-@keyframes breathe {
-  0% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.25); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.6; }
-}
-
-.glow {
-  width: 70px;
-  height: 70px;
-  background: #8affc1;
+#mic {
+  width: 90px;
+  height: 90px;
+  margin: 20px auto;
   border-radius: 50%;
-  margin: 30px auto;
-  box-shadow: 0 0 40px #8affc1;
-  animation: pulse 4s infinite;
-  cursor: pointer;
+  background: rgba(140,255,200,0.7);
+  box-shadow: 0 0 40px rgba(140,255,200,0.7);
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.35); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.7; }
+#status {
+  font-size: 14px;
+  opacity: 0.7;
 }
 </style>
 </head>
@@ -157,7 +131,7 @@ button {
 <div id="aurora"></div>
 
 <div class="container">
-  <div class="avatar">
+  <div class="avatar" id="avatar">
     <div class="face">
       <div class="eye left"></div>
       <div class="eye right"></div>
@@ -166,52 +140,54 @@ button {
   </div>
 
   <h1>Calm Space</h1>
-  <p>I’m here with you. We’ll slow down together.</p>
+  <p>Read gently. Your voice guides the calm.</p>
 
-  <textarea id="emotion" placeholder="How are you feeling?"></textarea><br>
-  <button onclick="startSession()">Begin Calm</button>
+  <button onclick="startSession()">Begin</button>
 
-  <div id="activity"></div>
+  <div id="passage"></div>
+  <div id="mic"></div>
+  <div id="status"></div>
 </div>
 
 <script>
-let audioCtx;
-let nodes = [];
-let activityStep = 0;
+let audioCtx, analyser, micSource, ambientNodes = [];
+let passageIndex = 0;
+
+const passages = [
+  "Breathe in slowly. Let your voice be soft and unhurried.",
+  "There is no rush. Each word can float gently forward.",
+  "You are safe in this moment. Nothing else needs attention.",
+  "Allow pauses. Silence is part of calm.",
+  "Stay here. Your voice is steady and enough."
+];
 
 function startSession() {
-  stopSound();
-  startGeneratedSound();
-  activityStep = 0;
-  nextActivity();
+  startAmbient();
+  startMic();
+  passageIndex = 0;
+  showPassage();
 }
 
-/* FULLY GENERATED SOUND — DIFFERENT EVERY SESSION */
-function startGeneratedSound() {
+/* GENERATED AMBIENT */
+function startAmbient() {
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  // Noise base
-  const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 2, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < data.length; i++) {
-    data[i] = (Math.random() * 2 - 1) * 0.03;
-  }
+  const noiseBuf = audioCtx.createBuffer(1, audioCtx.sampleRate * 2, audioCtx.sampleRate);
+  const data = noiseBuf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = (Math.random()*2-1)*0.025;
 
   const noise = audioCtx.createBufferSource();
-  noise.buffer = buffer;
+  noise.buffer = noiseBuf;
   noise.loop = true;
 
-  // Random oscillator (AI "mood")
   const osc = audioCtx.createOscillator();
-  osc.type = ["sine", "triangle"][Math.floor(Math.random() * 2)];
-  osc.frequency.value = 80 + Math.random() * 120;
+  osc.type = "sine";
+  osc.frequency.value = 80 + Math.random()*120;
 
-  // Filter
   const filter = audioCtx.createBiquadFilter();
   filter.type = "lowpass";
-  filter.frequency.value = 400 + Math.random() * 600;
+  filter.frequency.value = 400 + Math.random()*600;
 
-  // Gain
   const gain = audioCtx.createGain();
   gain.gain.value = 0.25;
 
@@ -222,39 +198,61 @@ function startGeneratedSound() {
 
   noise.start();
   osc.start();
-
-  nodes.push(noise, osc, filter, gain);
 }
 
-function stopSound() {
-  if (audioCtx) {
-    audioCtx.close();
-    audioCtx = null;
-    nodes = [];
+/* MICROPHONE + VISUAL REACTION */
+async function startMic() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    micSource = audioCtx.createMediaStreamSource(stream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+
+    micSource.connect(analyser);
+    document.getElementById("status").innerText =
+      "Microphone active. Read aloud naturally.";
+
+    visualizeMic();
+  } catch {
+    document.getElementById("status").innerText =
+      "Microphone access blocked.";
   }
 }
 
-/* CALM ACTIVITIES */
-function nextActivity() {
-  const area = document.getElementById("activity");
-  area.innerHTML = "";
+function visualizeMic() {
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
 
-  if (activityStep === 0) {
-    area.innerHTML = `<div class="breath">Breathe slowly</div>`;
-    setTimeout(() => { activityStep++; nextActivity(); }, 12000);
-  }
-  else if (activityStep === 1) {
-    area.innerHTML = `<p>Touch the light when you’re ready</p>`;
-    const glow = document.createElement("div");
-    glow.className = "glow";
-    glow.onclick = () => {
-      activityStep++;
-      nextActivity();
-    };
-    area.appendChild(glow);
-  }
-  else {
-    area.innerHTML = `<p>You can stay here as long as you like.</p>`;
+  const volume = data.reduce((a,b)=>a+b)/data.length;
+  const scale = 1 + volume / 300;
+
+  document.getElementById("mic").style.transform =
+    `scale(${scale})`;
+  document.getElementById("mic").style.boxShadow =
+    `0 0 ${30+volume}px rgba(140,255,200,0.8)`;
+
+  document.getElementById("avatar").style.transform =
+    `scale(${1 + volume/600})`;
+
+  if (volume > 25) advancePassage();
+
+  requestAnimationFrame(visualizeMic);
+}
+
+/* PASSAGE FLOW */
+function showPassage() {
+  document.getElementById("passage").innerText = passages[passageIndex];
+}
+
+let lastAdvance = 0;
+function advancePassage() {
+  const now = Date.now();
+  if (now - lastAdvance < 4000) return;
+  lastAdvance = now;
+
+  passageIndex++;
+  if (passageIndex < passages.length) {
+    showPassage();
   }
 }
 </script>
