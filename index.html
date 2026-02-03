@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <title>Calm Session</title>
-
 <style>
+/* Body & Background */
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
-  background: radial-gradient(circle at top, #1b2b34, #0a1116);
-  color: white;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg,#1f2a38,#0f131a);
+  color: #f0f0f0;
   overflow: hidden;
 }
 
+/* Screens */
 .screen {
   position: absolute;
   inset: 0;
@@ -28,71 +29,85 @@ body {
   pointer-events: none;
 }
 
-h1 {
-  font-weight: 400;
-  letter-spacing: 1px;
-}
-
-button {
-  padding: 14px 28px;
-  border-radius: 30px;
-  border: none;
-  font-size: 18px;
-  background: #7dd3fc;
-  color: #022c3a;
-  cursor: pointer;
-}
-
+/* Avatar */
 .avatar {
-  width: 120px;
-  height: 120px;
-  background: #7dd3fc;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle at 30% 30%, #7dd3fc, #34d399);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
-  animation: float 4s ease-in-out infinite;
+  margin-bottom: 30px;
+  animation: float 5s ease-in-out infinite;
+  box-shadow: 0 0 50px rgba(125,211,252,0.4);
 }
 
 .avatar::before {
   content: "☺";
-  font-size: 48px;
+  font-size: 64px;
   color: #022c3a;
 }
 
 @keyframes float {
   0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-12px); }
 }
 
-.card {
-  background: rgba(255,255,255,0.08);
-  padding: 30px;
-  border-radius: 20px;
-  max-width: 600px;
-  text-align: center;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+/* Headings & buttons */
+h1 {
+  font-weight: 400;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
 }
 
-.passage {
-  margin-top: 20px;
+button {
+  padding: 16px 36px;
+  border-radius: 35px;
+  border: none;
   font-size: 20px;
-  line-height: 1.6;
-  padding: 15px;
-  border-radius: 12px;
+  background: #7dd3fc;
+  color: #022c3a;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* Card */
+.card {
+  background: rgba(255,255,255,0.05);
+  padding: 40px;
+  border-radius: 25px;
+  max-width: 700px;
+  text-align: center;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+}
+
+/* Passage */
+.passage {
+  margin-top: 30px;
+  font-size: 22px;
+  line-height: 1.8;
+  padding: 20px;
+  border-radius: 15px;
   transition: background 0.5s;
 }
 
 .passage.active {
-  background: rgba(0,255,180,0.25);
+  background: rgba(0,255,180,0.3);
 }
 
+/* Aurora Background */
 .aurora {
   position: absolute;
   inset: 0;
   background: linear-gradient(120deg, #38bdf8, #34d399, #818cf8);
-  opacity: 0.15;
+  opacity: 0.12;
   animation: aurora 14s linear infinite;
   pointer-events: none;
 }
@@ -102,24 +117,24 @@ button {
   100% { filter: hue-rotate(360deg); }
 }
 
-/* Mini games */
+/* Mini-games */
 .circle {
-  width: 160px;
-  height: 160px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
-  background: rgba(125,211,252,0.4);
+  background: rgba(125,211,252,0.35);
   animation: breathe 6s ease-in-out infinite;
 }
 
 @keyframes breathe {
   0% { transform: scale(0.8); }
-  50% { transform: scale(1.1); }
+  50% { transform: scale(1.15); }
   100% { transform: scale(0.8); }
 }
 
 .focus-dot {
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   background: #34d399;
   border-radius: 50%;
   position: absolute;
@@ -127,11 +142,11 @@ button {
 }
 </style>
 </head>
-
 <body>
+
 <div class="aurora"></div>
 
-<!-- START SCREEN -->
+<!-- Start Screen -->
 <div id="startScreen" class="screen">
   <div class="avatar"></div>
   <h1>Welcome</h1>
@@ -139,31 +154,33 @@ button {
   <button onclick="startSession()">Start Session</button>
 </div>
 
-<!-- READING SCREEN -->
+<!-- Reading Screen -->
 <div id="readingScreen" class="screen hidden">
   <div class="avatar"></div>
   <div class="card">
     <h1>Read this for me</h1>
     <div id="passage" class="passage"></div>
-    <p style="opacity:.7">Speak gently. The words will glow when I hear you.</p>
+    <p style="opacity:0.7;margin-top:20px;">
+      Speak gently. The words will glow when I hear you.
+    </p>
   </div>
 </div>
 
-<!-- MINI GAME SCREEN -->
+<!-- Game Screen -->
 <div id="gameScreen" class="screen hidden">
   <div class="avatar"></div>
   <div class="card">
     <h1 id="gameTitle">Breathe with me</h1>
     <div id="gameArea"></div>
-    <p id="gameHint" style="opacity:.7;margin-top:15px;"></p>
+    <p id="gameHint" style="opacity:0.7;margin-top:20px;"></p>
   </div>
 </div>
 
 <script>
 const passages = [
-  "Take a slow breath in. Let the air fill your chest gently. As you speak, allow your body to soften.",
-  "Nothing is expected of you right now. Each word can be slow, quiet, and kind.",
-  "You are allowed to rest here. Let your voice move at its own calm pace."
+  "Take a slow breath in. Let your chest expand gently. As you read aloud, feel your body relax.",
+  "Nothing is expected of you now. Each word can be slow, quiet, and soothing.",
+  "Pause if needed. Your voice guides your calm. You are safe in this moment."
 ];
 
 let voiceTimer = 0;
@@ -228,7 +245,7 @@ function startGame() {
 
   if (currentGame === 0) {
     title.textContent = "Breathe with me";
-    hint.textContent = "In as it grows. Out as it shrinks.";
+    hint.textContent = "In as it grows, out as it shrinks.";
     const circle = document.createElement("div");
     circle.className = "circle";
     gameArea.appendChild(circle);
@@ -237,7 +254,6 @@ function startGame() {
       currentGame++;
       startGame();
     }, 12000);
-
   } else {
     title.textContent = "Slow Focus";
     hint.textContent = "Click the dot gently when it appears.";
