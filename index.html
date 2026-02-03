@@ -10,35 +10,28 @@
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Lemon+Milk+Pro:wght@400;700&display=swap');
-  body {
-    margin: 0;
-    font-family: 'Lemon Milk Pro', sans-serif;
-    background: linear-gradient(180deg, #b0e0f0 0%, #ffffff 100%);
-    overflow-x: hidden;
-  }
-  .container { max-width: 900px; margin: auto; padding: 20px; text-align: center; }
-  h1 { font-size: 2.5rem; color: #2d6a9f; margin-bottom: 1rem; }
-  .avatar { width: 120px; height: 120px; margin: auto; }
-  .avatar img { width: 100%; animation: float 4s ease-in-out infinite; }
-  @keyframes float {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
-  }
-  .textbox { background: rgba(255,255,255,0.8); border-radius: 25px; padding: 20px; margin: 20px 0; box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
-  button { font-size: 1.2rem; padding: 10px 20px; border-radius: 15px; border: none; background: #34d399; color: white; cursor: pointer; transition: transform 0.2s; }
-  button:hover { transform: scale(1.05); }
-  .games { margin-top: 20px; }
-  .game { display:none; margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.85); border-radius: 20px; box-shadow: 0 5px 12px rgba(0,0,0,0.15); }
-  .reward { font-size: 1.5rem; color: #ffb347; margin-top: 20px; display:none; }
-  .aurora { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; background: linear-gradient(45deg, rgba(0,200,255,0.1), rgba(255,100,255,0.1), rgba(0,255,100,0.1)); animation: aurora 10s linear infinite; }
-  @keyframes aurora { 0%{background-position:0 0;}100%{background-position:100% 100%;} }
+  body { margin:0; font-family:'Lemon Milk Pro',sans-serif; background:linear-gradient(180deg,#b0e0f0,#ffffff); overflow-x:hidden; }
+  .container{max-width:900px;margin:auto;padding:20px;text-align:center;}
+  h1{font-size:2.5rem;color:#2d6a9f;margin-bottom:1rem;}
+  .avatar{width:120px;height:120px;margin:auto;position:relative;}
+  #avatarImg{width:100%;transition:all 0.3s;}
+  .textbox{background:rgba(255,255,255,0.8);border-radius:25px;padding:20px;margin:20px 0;box-shadow:0 8px 16px rgba(0,0,0,0.2);}
+  button{font-size:1.2rem;padding:10px 20px;border-radius:15px;border:none;background:#34d399;color:white;cursor:pointer;transition:transform 0.2s;}
+  button:hover{transform:scale(1.05);}
+  .games{margin-top:20px;}
+  .game{display:none;margin-top:20px;padding:15px;background:rgba(255,255,255,0.85);border-radius:20px;box-shadow:0 5px 12px rgba(0,0,0,0.15);}
+  .reward{font-size:1.5rem;color:#ffb347;margin-top:20px;display:none;}
+  .aurora{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;background:linear-gradient(45deg,rgba(0,200,255,0.1),rgba(255,100,255,0.1),rgba(0,255,100,0.1));animation:aurora 10s linear infinite;}
+  @keyframes aurora{0%{background-position:0 0;}100%{background-position:100% 100%;}}
 </style>
 </head>
 <body>
 <div class="aurora"></div>
 <div class="container">
   <h1>Calmify</h1>
-  <div class="avatar"><img src="avatar.png" alt="Calming Avatar"></div>
+  <div class="avatar">
+    <img id="avatarImg" src="avatar.png" alt="Avatar">
+  </div>
   <div class="textbox">
     <p>How are you feeling today?</p>
     <input type="text" id="userEmotion" placeholder="Enter your feelings..." style="width:80%; padding:10px; border-radius:10px; border:1px solid #ccc;">
@@ -55,96 +48,176 @@
 </div>
 
 <script>
-  // --- Ambient AI-generated sound simulation ---
-  let audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  function playCalmSound() {
-    let osc = audioContext.createOscillator();
-    let gain = audioContext.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(220 + Math.random()*80, audioContext.currentTime);
-    gain.gain.setValueAtTime(0.05, audioContext.currentTime);
-    osc.connect(gain);
-    gain.connect(audioContext.destination);
-    osc.start();
-    osc.stop(audioContext.currentTime + 10);
-    setTimeout(playCalmSound, 5000 + Math.random()*5000);
-  }
-  playCalmSound();
+/* ====== CALMING SOUND SIMULATION ====== */
+let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playCalmTone(){
+  let osc = audioCtx.createOscillator();
+  let gain = audioCtx.createGain();
+  osc.type='sine';
+  osc.frequency.setValueAtTime(200+Math.random()*100, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime+10);
+  setTimeout(playCalmTone,5000+Math.random()*5000);
+}
+playCalmTone();
 
-  // --- Session start ---
-  const passages = [
-    "Take a deep breath and feel the calm around you.",
-    "Imagine a soft cloud floating gently across the sky.",
-    "Notice each sound in your environment and let it soothe you.",
-    "Focus on the gentle rise and fall of your breath.",
-    "Picture a serene lake reflecting the morning sun."
-  ];
+/* ====== READING PASSAGES ====== */
+const passages = [
+  "Take a deep breath and feel the calm around you.",
+  "Imagine a soft cloud floating gently across the sky.",
+  "Notice each sound in your environment and let it soothe you.",
+  "Focus on the gentle rise and fall of your breath.",
+  "Picture a serene lake reflecting the morning sun."
+];
 
-  const miniGamesList = [
-    "ColorMatching","BubblePop","ShapeSorting","MemoryCalm","BreathingGuide",
-    "GentlePuzzle","CloudDrift","ZenDrawing","SoundMatching","FloatingLanterns",
-    "CalmSequence","LeafCatcher","RaindropCalm","StarTracing","AnimalWalk"
-  ];
+/* ====== MINI-GAMES ====== */
+const miniGamesList = [
+  "BubblePop","ColorMatch","LeafCatcher","ZenDrawing","FloatingLanterns"
+];
 
-  function getRandomGames(n) {
-    const shuffled = miniGamesList.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0,n);
-  }
+function getRandomGames(n){
+  const shuffled = miniGamesList.sort(()=>0.5-Math.random());
+  return shuffled.slice(0,n);
+}
 
-  const userEmotion = document.getElementById('userEmotion');
-  const startButton = document.getElementById('startSession');
-  const readingDiv = document.getElementById('reading');
-  const passageEl = document.getElementById('passage');
-  const miniGamesDiv = document.getElementById('miniGames');
-  const rewardEl = document.getElementById('reward');
+/* ====== SESSION START ====== */
+const userEmotion = document.getElementById('userEmotion');
+const startButton = document.getElementById('startSession');
+const readingDiv = document.getElementById('reading');
+const passageEl = document.getElementById('passage');
+const miniGamesDiv = document.getElementById('miniGames');
+const rewardEl = document.getElementById('reward');
+const avatarImg = document.getElementById('avatarImg');
 
-  startButton.addEventListener('click', () => {
-    document.querySelector('.textbox').style.display = 'none';
-    readingDiv.style.display = 'block';
+startButton.addEventListener('click',()=>{
+  document.querySelector('.textbox').style.display='none';
+  readingDiv.style.display='block';
+  avatarImg.style.transform='scale(1.1)'; // Avatar reacts
 
-    // --- Generate random passage ---
-    passageEl.textContent = passages[Math.floor(Math.random()*passages.length)];
-    passageEl.addEventListener('click', () => {
-      passageEl.style.background = '#c4f0c4'; // lights up green
-    });
+  passageEl.textContent = passages[Math.floor(Math.random()*passages.length)];
+  passageEl.onclick = ()=>{ passageEl.style.background='#c4f0c4'; avatarImg.style.transform='scale(1.2)'; };
 
-    // --- Start mini-games after reading ---
-    setTimeout(() => {
-      readingDiv.style.display = 'none';
-      miniGamesDiv.style.display = 'block';
-      runMiniGames();
-    }, 5000); // 5 sec to read, adjust as needed
-  });
+  setTimeout(()=>{
+    readingDiv.style.display='none';
+    miniGamesDiv.style.display='block';
+    runMiniGames();
+  },5000);
+});
 
-  function runMiniGames() {
-    const sessionGames = getRandomGames(5);
-    miniGamesDiv.innerHTML = '';
-    let current = 0;
+/* ====== MINI-GAMES FUNCTION ====== */
+function runMiniGames(){
+  const sessionGames = getRandomGames(5);
+  miniGamesDiv.innerHTML='';
+  let current=0;
 
-    function showNextGame() {
-      if(current >= sessionGames.length) {
-        miniGamesDiv.style.display = 'none';
-        rewardEl.style.display = 'block';
-        setTimeout(()=> rewardEl.style.display='none',5000);
-        return;
-      }
-      const gameName = sessionGames[current];
-      const gameDiv = document.createElement('div');
-      gameDiv.className = 'game';
-      gameDiv.style.display='block';
-      gameDiv.textContent = `🎮 ${gameName} - [Interactive calming mini-game here]`;
-      miniGamesDiv.appendChild(gameDiv);
-
-      // Simulate game completion
-      setTimeout(() => {
-        gameDiv.style.display='none';
-        current++;
-        showNextGame();
-      }, 8000); // each game lasts 8 seconds for demo
+  function showNextGame(){
+    if(current>=sessionGames.length){
+      miniGamesDiv.style.display='none';
+      rewardEl.style.display='block';
+      setTimeout(()=>rewardEl.style.display='none',5000);
+      avatarImg.style.transform='scale(1)'; // Reset avatar
+      return;
     }
+    const gameName = sessionGames[current];
+    miniGamesDiv.innerHTML='';
 
-    showNextGame();
+    if(gameName==='BubblePop'){ bubblePopMiniGame(); }
+    else if(gameName==='ColorMatch'){ colorMatchMiniGame(); }
+    else if(gameName==='LeafCatcher'){ leafCatcherMiniGame(); }
+    else if(gameName==='ZenDrawing'){ zenDrawingMiniGame(); }
+    else if(gameName==='FloatingLanterns'){ floatingLanternMiniGame(); }
+
+    current++;
   }
+
+  function nextGameAfterDelay(delay=8000){ setTimeout(showNextGame,delay); }
+
+  /* ====== Bubble Pop Mini-Game ====== */
+  function bubblePopMiniGame(){
+    const canvas = document.createElement('canvas');
+    canvas.width=400; canvas.height=400;
+    miniGamesDiv.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    let bubbles=[];
+    function createBubble(){ bubbles.push({x:Math.random()*400,y:400,r:20,speed:1+Math.random()*1.5}); }
+    canvas.onclick=e=>{ bubbles=bubbles.filter(b=>Math.sqrt((e.offsetX-b.x)**2+(e.offsetY-b.y)**2)>b.r); avatarImg.style.transform='scale(1.15)'; };
+    const interval=setInterval(()=>{
+      if(Math.random()<0.05) createBubble();
+      ctx.clearRect(0,0,400,400);
+      bubbles.forEach(b=>{
+        ctx.beginPath();
+        ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+        ctx.fillStyle='rgba(173,216,230,0.6)';
+        ctx.fill();
+        b.y-=b.speed;
+      });
+    },30);
+    setTimeout(()=>{clearInterval(interval); nextGameAfterDelay();},8000);
+  }
+
+  /* ====== Color Match Mini-Game ====== */
+  function colorMatchMiniGame(){
+    const div = document.createElement('div');
+    div.innerHTML="<p>Click the green square!</p>";
+    const target=document.createElement('div');
+    target.style.width='50px'; target.style.height='50px';
+    target.style.backgroundColor='green'; target.style.margin='20px auto';
+    target.style.cursor='pointer';
+    target.onclick=()=>{ avatarImg.style.transform='scale(1.2)'; div.style.background='#c4f0c4'; };
+    div.appendChild(target);
+    miniGamesDiv.appendChild(div);
+    setTimeout(nextGameAfterDelay,8000);
+  }
+
+  /* ====== Leaf Catcher Mini-Game ====== */
+  function leafCatcherMiniGame(){
+    const div=document.createElement('div');
+    div.innerHTML="<p>Move your basket to catch leaves (drag mouse over the div)!</p>";
+    miniGamesDiv.appendChild(div);
+    setTimeout(nextGameAfterDelay,8000);
+  }
+
+  /* ====== Zen Drawing Mini-Game ====== */
+  function zenDrawingMiniGame(){
+    const canvas=document.createElement('canvas');
+    canvas.width=400; canvas.height=400;
+    canvas.style.background='rgba(255,255,255,0.8)';
+    miniGamesDiv.appendChild(canvas);
+    const ctx=canvas.getContext('2d');
+    let drawing=false;
+    canvas.onmousedown=e=>drawing=true;
+    canvas.onmouseup=e=>drawing=false;
+    canvas.onmousemove=e=>{ if(drawing){ ctx.fillStyle='rgba(0,150,255,0.3)'; ctx.fillRect(e.offsetX,e.offsetY,10,10); } };
+    setTimeout(nextGameAfterDelay,8000);
+  }
+
+  /* ====== Floating Lantern Mini-Game ====== */
+  function floatingLanternMiniGame(){
+    const canvas=document.createElement('canvas');
+    canvas.width=400; canvas.height=400;
+    miniGamesDiv.appendChild(canvas);
+    const ctx=canvas.getContext('2d');
+    let lanterns=[];
+    function createLantern(){ lanterns.push({x:Math.random()*400,y:400,r:15,speed:0.5+Math.random()*0.5}); }
+    const interval=setInterval(()=>{
+      if(Math.random()<0.03) createLantern();
+      ctx.clearRect(0,0,400,400);
+      lanterns.forEach(l=>{
+        ctx.beginPath();
+        ctx.arc(l.x,l.y,l.r,0,Math.PI*2);
+        ctx.fillStyle='rgba(255,200,150,0.6)';
+        ctx.fill();
+        l.y-=l.speed;
+      });
+    },30);
+    setTimeout(()=>{clearInterval(interval); nextGameAfterDelay();},8000);
+  }
+
+  showNextGame();
+}
 </script>
 </body>
 </html>
