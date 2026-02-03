@@ -2,202 +2,202 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calmify</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#b0e0f0">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<meta name="theme-color" content="#34d399">
+<link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Lemon+Milk+Pro:wght@400;700&display=swap');
+/* ===== BODY & FONTS ===== */
+body {
+  margin:0; 
+  font-family:'Righteous', cursive; 
+  background:linear-gradient(to bottom,#b0e0f0,#e0f7fa); 
+  overflow:hidden; 
+  height:100vh;
+}
 
-  body {
-    margin:0;
-    font-family:'Lemon Milk Pro',sans-serif;
-    background: #a0d8f1;
-    overflow-x:hidden;
-    position:relative;
-  }
+/* ===== AURORA ===== */
+.aurora {
+  position:absolute; inset:0; 
+  background: radial-gradient(circle at 50% 50%, rgba(144,224,239,0.5), transparent 60%);
+  animation: auroraMove 20s linear infinite; z-index:0;
+}
+@keyframes auroraMove {
+  0%{background-position:0% 0%;} 50%{background-position:100% 50%;} 100%{background-position:0% 0%;}
+}
 
-  /* Clouds background */
-  body::before {
-    content:"";
-    position:fixed;
-    top:0; left:0; width:100%; height:100%;
-    background: url('clouds.png') repeat-x;
-    animation: cloudMove 60s linear infinite;
-    opacity:0.5;
-    z-index:-2;
-  }
+/* ===== CLOUDS ===== */
+.cloud {
+  position:absolute; width:100px; height:60px; background:white; border-radius:50%; opacity:0.8;
+  animation:floatClouds linear infinite; z-index:1;
+}
+@keyframes floatClouds {0%{transform:translateX(-150px);}100%{transform:translateX(110vw);}}
 
-  @keyframes cloudMove {
-    0%{background-position-x:0;}
-    100%{background-position-x:2000px;}
-  }
+/* ===== SCREENS ===== */
+.screen {
+  position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; 
+  transition:opacity 1.5s ease; z-index:2;
+}
+.hidden {opacity:0; pointer-events:none;}
 
-  .aurora {
-    position:fixed;
-    top:0; left:0; width:100%; height:100%;
-    pointer-events:none;
-    background: linear-gradient(45deg, rgba(0,200,255,0.1), rgba(255,100,255,0.1), rgba(0,255,100,0.1));
-    animation: aurora 10s linear infinite;
-    z-index:-1;
-  }
-  @keyframes aurora {0%{background-position:0 0;}100%{background-position:100% 100%;}}
+/* ===== AVATAR ===== */
+.avatar {width:140px; height:160px; margin-bottom:20px; position:relative;}
+.avatar svg {display:block; animation: float 3s ease-in-out infinite;}
+@keyframes float {0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.arm {transform-origin:top center; animation:waveArm 2s ease-in-out infinite;}
+@keyframes waveArm {0%,100%{transform:rotate(0deg);}50%{transform:rotate(15deg);}}
+.blink {animation: blinkEyes 5s infinite;}
+@keyframes blinkEyes {0%,90%,100%{opacity:1;}95%{opacity:0;}}
 
-  .container{
-    max-width:900px;
-    margin:auto;
-    padding:20px;
-    text-align:center;
-  }
-  h1{font-size:2.5rem;color:#2d6a9f;margin-bottom:1rem;}
+/* ===== CARDS ===== */
+.card {
+  background: rgba(255,255,255,0.85); padding:40px; border-radius:25px; max-width:700px; text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,0.2);
+}
+h1 {font-weight:400; margin-bottom:15px;}
 
-  /* Avatar */
-  .avatar{width:120px;height:120px;margin:auto;position:relative;}
-  #avatarImg{width:100%;transition:all 0.3s; animation: float 4s ease-in-out infinite;}
-  @keyframes float {0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+/* ===== BUTTONS ===== */
+button {
+  padding:16px 36px; border-radius:35px; border:none; font-size:20px;
+  background:#34d399; color:white; cursor:pointer;
+  box-shadow:0 6px 15px rgba(0,0,0,0.2); transition: transform 0.2s, box-shadow 0.2s;
+}
+button:hover {transform:translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,0.3);}
 
-  .textbox{
-    background: rgba(255,255,255,0.8);
-    border-radius:25px;
-    padding:20px;
-    margin:20px 0;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  }
+/* ===== PASSAGES ===== */
+.passage {margin-top:30px; font-size:22px; line-height:1.8; padding:20px; border-radius:15px; transition:background 0.5s;}
+.passage.active {background: rgba(52,211,153,0.3);}
 
-  button{
-    font-size:1.2rem;
-    padding:10px 20px;
-    border-radius:15px;
-    border:none;
-    background:#34d399;
-    color:white;
-    cursor:pointer;
-    transition:transform 0.2s;
-  }
-  button:hover{transform:scale(1.05);}
-
-  .games{margin-top:20px;}
-  .game{display:none;margin-top:20px;padding:15px;background:rgba(255,255,255,0.85);border-radius:20px;box-shadow:0 5px 12px rgba(0,0,0,0.15);}
-  .reward{font-size:1.5rem;color:#ffb347;margin-top:20px;display:none;}
+/* ===== MINI-GAME ELEMENTS ===== */
+.circle {width:180px;height:180px;border-radius:50%;background:rgba(52,211,153,0.3);animation:breathe 6s ease-in-out infinite;margin:auto;}
+@keyframes breathe {0%{transform:scale(0.8);}50%{transform:scale(1.15);}100%{transform:scale(0.8);}}
+.focus-dot {width:30px;height:30px;background:#34d399;border-radius:50%;position:absolute;cursor:pointer;}
+.trace-line {width:200px;height:20px;background:rgba(52,211,153,0.3);border-radius:10px;margin:auto;position:relative;}
+.trace-dot {width:20px;height:20px;background:#34d399;border-radius:50%;position:absolute;top:-5px;animation:traceMove 4s linear infinite;}
+@keyframes traceMove {0%{left:0;}100%{left:180px;}}
+.reward-star {color:#ffe066;font-size:36px;margin:5px;}
+.pricing-options button{display:block;margin:12px auto;width:60%; max-width:200px;}
 </style>
 </head>
 <body>
+
+<!-- Aurora + Clouds -->
 <div class="aurora"></div>
-<div class="container">
-  <h1>Calmify</h1>
+<div class="cloud" style="top:10%; animation-duration:60s;"></div>
+<div class="cloud" style="top:25%; animation-duration:80s;"></div>
+<div class="cloud" style="top:45%; animation-duration:100s;"></div>
+<div class="cloud" style="top:60%; animation-duration:90s;"></div>
+
+<!-- Start Screen -->
+<div id="startScreen" class="screen">
   <div class="avatar">
-    <img id="avatarImg" src="avatar.png" alt="Chibi Avatar">
+    <svg viewBox="0 0 100 140" width="100" height="140">
+      <ellipse cx="50" cy="110" rx="25" ry="30" fill="#34d399"/>
+      <circle cx="50" cy="50" r="30" fill="#fff"/>
+      <circle cx="40" cy="45" r="5" fill="#022c3a" class="blink"/>
+      <circle cx="60" cy="45" r="5" fill="#022c3a" class="blink"/>
+      <path d="M40 60 Q50 70 60 60" stroke="#022c3a" stroke-width="2" fill="none"/>
+      <line x1="25" y1="90" x2="10" y2="70" stroke="#34d399" stroke-width="5" class="arm"/>
+      <line x1="75" y1="90" x2="90" y2="70" stroke="#34d399" stroke-width="5" class="arm"/>
+    </svg>
   </div>
-  <div class="textbox">
-    <p>How are you feeling today?</p>
-    <input type="text" id="userEmotion" placeholder="Enter your feelings..." style="width:80%; padding:10px; border-radius:10px; border:1px solid #ccc;">
-    <button id="startSession">Start Session</button>
-  </div>
+  <h1>Welcome to Calmify</h1>
+  <p>I’ll stay with you. Let’s start your calming session.</p>
+  <button onclick="startSession()">Start Session</button>
+</div>
 
-  <div id="reading" class="game">
-    <h2>Read this for me</h2>
-    <p id="passage" style="font-size:1.2rem; line-height:1.6; cursor:pointer;"></p>
+<!-- Reading Screen -->
+<div id="readingScreen" class="screen hidden">
+  <div class="avatar">
+    <!-- Avatar SVG repeated -->
   </div>
+  <div class="card">
+    <h1>Read this for me</h1>
+    <div id="passage" class="passage"></div>
+    <p style="opacity:0.7;margin-top:20px;">Speak gently. Words glow when I hear you.</p>
+  </div>
+</div>
 
-  <div id="miniGames" class="games"></div>
-  <div class="reward" id="reward">🎉 Great job! 🎉</div>
+<!-- Game Screen -->
+<div id="gameScreen" class="screen hidden">
+  <div class="avatar">
+    <!-- Avatar SVG repeated -->
+  </div>
+  <div class="card">
+    <h1 id="gameTitle">Calming Game</h1>
+    <div id="gameArea"></div>
+    <p id="gameHint" style="opacity:0.7;margin-top:20px;"></p>
+    <div id="rewards"></div>
+  </div>
 </div>
 
 <script>
-/* ====== CALMING SOUND SIMULATION ====== */
-let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playCalmTone(){
-  let osc = audioCtx.createOscillator();
-  let gain = audioCtx.createGain();
-  osc.type='sine';
-  osc.frequency.setValueAtTime(200+Math.random()*100, audioCtx.currentTime);
-  gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.start();
-  osc.stop(audioCtx.currentTime+10);
-  setTimeout(playCalmTone,5000+Math.random()*5000);
+let sessions = Number(localStorage.getItem("sessions")||0);
+let audioCtx, ambientGain;
+
+function startSession(){
+  if(sessions>=3){ alert("Free sessions over"); return; }
+  sessions++; localStorage.setItem("sessions",sessions);
+  startAmbient();
+  speakText("Welcome! Let's begin your calming session.");
+  document.getElementById("startScreen").classList.add("hidden");
+  setTimeout(()=>{document.getElementById("readingScreen").classList.remove("hidden"); beginReading();},1500);
 }
-playCalmTone();
 
-/* ====== READING PASSAGES ====== */
-const passages = [
-  "Take a deep breath and feel the calm around you.",
-  "Imagine a soft cloud floating gently across the sky.",
-  "Notice each sound in your environment and let it soothe you.",
-  "Focus on the gentle rise and fall of your breath.",
-  "Picture a serene lake reflecting the morning sun."
-];
-
-/* ====== MINI-GAMES ====== */
-const miniGamesList = ["BubblePop","ColorMatch","LeafCatcher","ZenDrawing","FloatingLanterns"];
-function getRandomGames(n){ const shuffled = miniGamesList.sort(()=>0.5-Math.random()); return shuffled.slice(0,n); }
-
-/* ====== SESSION START ====== */
-const userEmotion = document.getElementById('userEmotion');
-const startButton = document.getElementById('startSession');
-const readingDiv = document.getElementById('reading');
-const passageEl = document.getElementById('passage');
-const miniGamesDiv = document.getElementById('miniGames');
-const rewardEl = document.getElementById('reward');
-const avatarImg = document.getElementById('avatarImg');
-
-startButton.addEventListener('click',()=>{
-  document.querySelector('.textbox').style.display='none';
-  readingDiv.style.display='block';
-  avatarImg.style.transform='scale(1.1)';
-  passageEl.textContent = passages[Math.floor(Math.random()*passages.length)];
-  passageEl.onclick = ()=>{ passageEl.style.background='#c4f0c4'; avatarImg.style.transform='scale(1.2)'; };
-
-  setTimeout(()=>{
-    readingDiv.style.display='none';
-    miniGamesDiv.style.display='block';
-    runMiniGames();
-  },5000);
-});
-
-/* ====== MINI-GAMES FUNCTION ====== */
-function runMiniGames(){
-  const sessionGames = getRandomGames(5);
-  miniGamesDiv.innerHTML=''; let current=0;
-
-  function showNextGame(){
-    if(current>=sessionGames.length){
-      miniGamesDiv.style.display='none';
-      rewardEl.style.display='block';
-      setTimeout(()=>rewardEl.style.display='none',5000);
-      avatarImg.style.transform='scale(1)';
-      return;
-    }
-    const gameName = sessionGames[current]; miniGamesDiv.innerHTML='';
-    if(gameName==='BubblePop'){ bubblePopMiniGame(); }
-    else if(gameName==='ColorMatch'){ colorMatchMiniGame(); }
-    else if(gameName==='LeafCatcher'){ leafCatcherMiniGame(); }
-    else if(gameName==='ZenDrawing'){ zenDrawingMiniGame(); }
-    else if(gameName==='FloatingLanterns'){ floatingLanternMiniGame(); }
-    current++;
+function startAmbient(){
+  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  ambientGain=audioCtx.createGain(); ambientGain.gain.value=0.12; ambientGain.connect(audioCtx.destination);
+  for(let i=0;i<4;i++){
+    const osc=audioCtx.createOscillator(); osc.type="sine"; osc.frequency.value=60+Math.random()*100;
+    const gain=audioCtx.createGain(); gain.gain.value=0.03+Math.random()*0.05;
+    osc.connect(gain); gain.connect(ambientGain); osc.start(); osc.stop(audioCtx.currentTime+600);
   }
-
-  function nextGameAfterDelay(delay=8000){ setTimeout(showNextGame,delay); }
-
-  function bubblePopMiniGame(){ /* interactive canvas bubbles */ 
-    const canvas=document.createElement('canvas'); canvas.width=400; canvas.height=400; miniGamesDiv.appendChild(canvas);
-    const ctx=canvas.getContext('2d'); let bubbles=[];
-    function createBubble(){ bubbles.push({x:Math.random()*400,y:400,r:20,speed:1+Math.random()*1.5}); }
-    canvas.onclick=e=>{ bubbles=bubbles.filter(b=>Math.sqrt((e.offsetX-b.x)**2+(e.offsetY-b.y)**2)>b.r); avatarImg.style.transform='scale(1.15)'; };
-    const interval=setInterval(()=>{ if(Math.random()<0.05) createBubble(); ctx.clearRect(0,0,400,400); bubbles.forEach(b=>{ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fillStyle='rgba(173,216,230,0.6)';ctx.fill(); b.y-=b.speed;}); },30);
-    setTimeout(()=>{clearInterval(interval); nextGameAfterDelay();},8000);
-  }
-
-  function colorMatchMiniGame(){ const div=document.createElement('div'); div.innerHTML="<p>Click the green square!</p>"; const target=document.createElement('div'); target.style.width='50px'; target.style.height='50px'; target.style.backgroundColor='green'; target.style.margin='20px auto'; target.style.cursor='pointer'; target.onclick=()=>{ avatarImg.style.transform='scale(1.2)'; div.style.background='#c4f0c4'; }; div.appendChild(target); miniGamesDiv.appendChild(div); setTimeout(nextGameAfterDelay,8000); }
-  function leafCatcherMiniGame(){ const div=document.createElement('div'); div.innerHTML="<p>Move your basket to catch leaves (drag mouse over the div)!</p>"; miniGamesDiv.appendChild(div); setTimeout(nextGameAfterDelay,8000); }
-  function zenDrawingMiniGame(){ const canvas=document.createElement('canvas'); canvas.width=400; canvas.height=400; canvas.style.background='rgba(255,255,255,0.8)'; miniGamesDiv.appendChild(canvas); const ctx=canvas.getContext('2d'); let drawing=false; canvas.onmousedown=e=>drawing=true; canvas.onmouseup=e=>drawing=false; canvas.onmousemove=e=>{if(drawing){ctx.fillStyle='rgba(0,150,255,0.3)';ctx.fillRect(e.offsetX,e.offsetY,10,10);}}; setTimeout(nextGameAfterDelay,8000); }
-  function floatingLanternMiniGame(){ const canvas=document.createElement('canvas'); canvas.width=400; canvas.height=400; miniGamesDiv.appendChild(canvas); const ctx=canvas.getContext('2d'); let lanterns=[]; function createLantern(){ lanterns.push({x:Math.random()*400,y:400,r:15,speed:0.5+Math.random()*0.5}); } const interval=setInterval(()=>{ if(Math.random()<0.03) createLantern(); ctx.clearRect(0,0,400,400); lanterns.forEach(l=>{ctx.beginPath();ctx.arc(l.x,l.y,l.r,0,Math.PI*2);ctx.fillStyle='rgba(255,200,150,0.6)';ctx.fill(); l.y-=l.speed;}); },30); setTimeout(()=>{clearInterval(interval); nextGameAfterDelay();},8000); }
-
-  showNextGame();
 }
+
+function speakText(text){
+  if(!('speechSynthesis'in window)) return;
+  const u=new SpeechSynthesisUtterance(text);
+  u.pitch=0.9; u.rate=0.95; u.volume=0.8; u.lang='en-US';
+  window.speechSynthesis.speak(u);
+}
+
+/* ===== Reading ===== */
+const passages=["Take a slow breath in. Let your chest expand gently.","Nothing is expected now. Words can be slow, quiet, and soothing.","Pause if needed. Your voice guides your calm."];
+let voiceTimer=0;
+function beginReading(){
+  const passage=document.getElementById("passage");
+  passage.textContent=passages[Math.floor(Math.random()*passages.length)];
+  speakText(passage.textContent);
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    const analyser=audioCtx.createAnalyser();
+    const mic=audioCtx.createMediaStreamSource(stream);
+    mic.connect(analyser); analyser.fftSize=256;
+    const data=new Uint8Array(analyser.frequencyBinCount);
+    function listen(){analyser.getByteFrequencyData(data);
+      const volume=data.reduce((a,b)=>a+b)/data.length;
+      if(volume>20){passage.classList.add("active");voiceTimer++;} else{passage.classList.remove("active");}
+      if(voiceTimer>200){transitionToGames(); return;} requestAnimationFrame(listen);
+    } listen();
+  });
+}
+
+function transitionToGames(){
+  document.getElementById("readingScreen").classList.add("hidden");
+  setTimeout(()=>{document.getElementById("gameScreen").classList.remove("hidden"); startGame();},1500);
+}
+
+/* ===== Mini-Games ===== */
+function startGame(){
+  const area=document.getElementById("gameArea"),title=document.getElementById("gameTitle"),hint=document.getElementById("gameHint");
+  area.innerHTML="";
+  const games=[breathingCircle,focusDot,traceLine]; const g=games[Math.floor(Math.random()*games.length)]; g(title,hint,area);
+}
+function breathingCircle(title,hint,area){title.textContent="Breathe with me"; hint.textContent="In as it grows, out as it shrinks."; speakText("Let's take slow breaths together."); const c=document.createElement("div"); c.className="circle"; area.appendChild(c); setTimeout(()=>{giveReward(); startGame();},12000);}
+function focusDot(title,hint,area){title.textContent="Focus gently"; hint.textContent="Click the dot gently when it appears."; speakText("Focus on the dot, gently."); spawnDot(area);}
+function spawnDot(area){const dot=document.createElement("div"); dot.className="focus-dot"; dot.style.left=Math.random()*80+"%"; dot.style.top=Math.random()*60+"%"; dot.onclick=()=>{dot.remove(); giveReward(); setTimeout(()=>spawnDot(area),1200);}; area.appendChild(dot);}
+function traceLine(title,hint,area){title.textContent="Trace the path"; hint.textContent="Follow the moving dot slowly."; speakText("Trace the moving dot slowly."); const line=document.createElement("div"); line.className="trace-line"; area.appendChild(line); const dot=document.createElement("div"); dot.className="trace-dot"; line.appendChild(dot); setTimeout(()=>{giveReward(); startGame();},10000);}
+function giveReward(){const rewards=document.getElementById("rewards"); const star=document.createElement("span"); star.className="reward-star"; star.textContent="★"; rewards.appendChild(star);}
 </script>
 </body>
 </html>
