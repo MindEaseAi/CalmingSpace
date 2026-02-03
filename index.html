@@ -4,12 +4,29 @@
 <meta charset="UTF-8">
 <title>Calm Session</title>
 <style>
+/* Body & background */
 body {
   margin: 0;
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg,#1f2a38,#0f131a);
-  color: #f0f0f0;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  background: linear-gradient(to bottom, #a3d8f4, #d0f0fd);
+  color: #022c3a;
   overflow: hidden;
+  height: 100vh;
+}
+
+/* Clouds */
+.cloud {
+  position: absolute;
+  width: 100px;
+  height: 60px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: floatClouds linear infinite;
+}
+@keyframes floatClouds {
+  0% {transform: translateX(-150px);}
+  100% {transform: translateX(110vw);}
 }
 
 /* Screens */
@@ -22,79 +39,74 @@ body {
   justify-content: center;
   transition: opacity 1.5s ease;
 }
-.hidden {opacity: 0; pointer-events: none;}
+.hidden {opacity:0; pointer-events:none;}
 
-/* Avatar */
+/* Avatar container */
 .avatar {
-  width: 180px;
-  height: 180px;
-  background: radial-gradient(circle at 30% 30%, #7dd3fc, #34d399);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 30px;
-  animation: float 5s ease-in-out infinite;
-  box-shadow: 0 0 50px rgba(125,211,252,0.4);
+  width: 120px;
+  height: 140px;
+  margin-bottom: 20px;
 }
-.avatar::before { content: "☺"; font-size: 64px; color: #022c3a;}
-@keyframes float {0%,100% {transform:translateY(0);} 50% {transform:translateY(-12px);}}
-
-/* Headings & Buttons */
-h1 {font-weight: 400; letter-spacing: 1px; margin-bottom: 15px;}
-button {
-  padding: 16px 36px; border-radius: 35px; border: none;
-  font-size: 20px; background: #7dd3fc; color: #022c3a; cursor: pointer;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-button:hover {transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.3);}
+.avatar svg {display:block; animation: float 3s ease-in-out infinite;}
+@keyframes float {0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
 
 /* Card */
 .card {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.6);
   padding: 40px;
   border-radius: 25px;
   max-width: 700px;
   text-align: center;
-  box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
+
+/* Headings & button */
+h1 {font-weight:400; margin-bottom:15px;}
+button {
+  padding: 16px 36px; border-radius: 35px; border:none;
+  font-size:20px; background:#34d399; color:white; cursor:pointer;
+  box-shadow:0 6px 15px rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+button:hover {transform:translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,0.3);}
 
 /* Passage */
 .passage {
   margin-top: 30px;
   font-size: 22px;
-  line-height: 1.8;
+  line-height:1.8;
   padding: 20px;
   border-radius: 15px;
   transition: background 0.5s;
 }
-.passage.active {background: rgba(0,255,180,0.3);}
-
-/* Aurora background */
-.aurora {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, #38bdf8, #34d399, #818cf8);
-  opacity: 0.12;
-  animation: aurora 14s linear infinite;
-  pointer-events: none;
-}
-@keyframes aurora {0% {filter:hue-rotate(0deg);} 100% {filter:hue-rotate(360deg);}}
+.passage.active {background: rgba(52,211,153,0.3);}
 
 /* Mini-games */
-.circle {width: 200px; height: 200px; border-radius: 50%; background: rgba(125,211,252,0.35); animation: breathe 6s ease-in-out infinite; margin:auto;}
-@keyframes breathe {0%{transform:scale(0.8);} 50%{transform:scale(1.15);} 100%{transform:scale(0.8);}}
-.focus-dot {width: 35px; height: 35px; background: #34d399; border-radius: 50%; position: absolute; cursor: pointer;}
-.reward-star {color:#ffe066; font-size:36px; margin:5px;}
+.circle {width:180px;height:180px;border-radius:50%;background:rgba(52,211,153,0.3);animation:breathe 6s ease-in-out infinite;margin:auto;}
+@keyframes breathe {0%{transform:scale(0.8);}50%{transform:scale(1.15);}100%{transform:scale(0.8);}}
+.focus-dot {width:30px;height:30px;background:#34d399;border-radius:50%;position:absolute;cursor:pointer;}
+.reward-star {color:#ffe066;font-size:36px;margin:5px;}
 </style>
 </head>
 <body>
-<div class="aurora"></div>
+
+<!-- Clouds -->
+<div class="cloud" style="top:10%; animation-duration:60s;"></div>
+<div class="cloud" style="top:25%; animation-duration:80s;"></div>
+<div class="cloud" style="top:45%; animation-duration:100s;"></div>
+<div class="cloud" style="top:60%; animation-duration:90s;"></div>
 
 <!-- Start Screen -->
 <div id="startScreen" class="screen">
-  <div class="avatar"></div>
+  <div class="avatar">
+    <svg viewBox="0 0 100 140" width="100" height="140">
+      <ellipse cx="50" cy="110" rx="25" ry="30" fill="#34d399"/>
+      <circle cx="50" cy="50" r="30" fill="#fff"/>
+      <circle cx="40" cy="45" r="5" fill="#022c3a"/>
+      <circle cx="60" cy="45" r="5" fill="#022c3a"/>
+      <path d="M40 60 Q50 70 60 60" stroke="#022c3a" stroke-width="2" fill="none"/>
+    </svg>
+  </div>
   <h1>Welcome</h1>
   <p>I’ll stay with you. Let’s begin calmly.</p>
   <button onclick="startSession()">Start Session</button>
@@ -102,17 +114,33 @@ button:hover {transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.
 
 <!-- Reading Screen -->
 <div id="readingScreen" class="screen hidden">
-  <div class="avatar"></div>
+  <div class="avatar">
+    <svg viewBox="0 0 100 140" width="100" height="140">
+      <ellipse cx="50" cy="110" rx="25" ry="30" fill="#34d399"/>
+      <circle cx="50" cy="50" r="30" fill="#fff"/>
+      <circle cx="40" cy="45" r="5" fill="#022c3a"/>
+      <circle cx="60" cy="45" r="5" fill="#022c3a"/>
+      <path d="M40 60 Q50 70 60 60" stroke="#022c3a" stroke-width="2" fill="none"/>
+    </svg>
+  </div>
   <div class="card">
     <h1>Read this for me</h1>
     <div id="passage" class="passage"></div>
-    <p style="opacity:0.7;margin-top:20px;">Speak gently. The words will glow when I hear you.</p>
+    <p style="opacity:0.7;margin-top:20px;">Speak gently. Words glow when I hear you.</p>
   </div>
 </div>
 
 <!-- Game Screen -->
 <div id="gameScreen" class="screen hidden">
-  <div class="avatar"></div>
+  <div class="avatar">
+    <svg viewBox="0 0 100 140" width="100" height="140">
+      <ellipse cx="50" cy="110" rx="25" ry="30" fill="#34d399"/>
+      <circle cx="50" cy="50" r="30" fill="#fff"/>
+      <circle cx="40" cy="45" r="5" fill="#022c3a"/>
+      <circle cx="60" cy="45" r="5" fill="#022c3a"/>
+      <path d="M40 60 Q50 70 60 60" stroke="#022c3a" stroke-width="2" fill="none"/>
+    </svg>
+  </div>
   <div class="card">
     <h1 id="gameTitle">Breathe with me</h1>
     <div id="gameArea"></div>
@@ -124,20 +152,20 @@ button:hover {transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.
 <script>
 // === PASSAGES & REWARDS ===
 const passages = [
-  "Take a slow breath in. Let your chest expand gently. As you read aloud, feel your body relax.",
+  "Take a slow breath in. Let your chest expand gently. Feel your body relax.",
   "Nothing is expected now. Each word can be slow, quiet, and soothing.",
-  "Pause if needed. Your voice guides your calm. You are safe in this moment."
+  "Pause if needed. Your voice guides your calm. You are safe."
 ];
 
 let voiceTimer = 0;
 let currentGame = 0;
-
-// === PROCEDURAL AMBIENT MUSIC ===
 let audioCtx, ambientGain;
+
+// === AMBIENT MUSIC ===
 function startAmbient() {
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
   ambientGain = audioCtx.createGain();
-  ambientGain.gain.value = 0.15; // soft but audible
+  ambientGain.gain.value = 0.15;
   ambientGain.connect(audioCtx.destination);
 
   for(let i=0;i<3;i++){
@@ -149,13 +177,13 @@ function startAmbient() {
     osc.connect(gain);
     gain.connect(ambientGain);
     osc.start();
-    osc.stop(audioCtx.currentTime+300); // long duration
+    osc.stop(audioCtx.currentTime+300);
   }
 }
 
 // === SESSION FLOW ===
 function startSession() {
-  startAmbient();
+  startAmbient(); // starts after user click
   document.getElementById("startScreen").classList.add("hidden");
   setTimeout(()=>{document.getElementById("readingScreen").classList.remove("hidden"); beginReading();},1500);
 }
@@ -164,9 +192,8 @@ function beginReading() {
   const passage = document.getElementById("passage");
   passage.textContent = passages[Math.floor(Math.random()*passages.length)];
   navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
-    const ctx = audioCtx;
-    const analyser = ctx.createAnalyser();
-    const mic = ctx.createMediaStreamSource(stream);
+    const analyser = audioCtx.createAnalyser();
+    const mic = audioCtx.createMediaStreamSource(stream);
     mic.connect(analyser);
     analyser.fftSize = 256;
     const data = new Uint8Array(analyser.frequencyBinCount);
@@ -189,16 +216,16 @@ function transitionToGames() {
 
 // === MINI-GAMES & REWARDS ===
 function startGame(){
-  const gameArea = document.getElementById("gameArea");
-  const title = document.getElementById("gameTitle");
-  const hint = document.getElementById("gameHint");
-  const rewards = document.getElementById("rewards");
+  const gameArea=document.getElementById("gameArea");
+  const title=document.getElementById("gameTitle");
+  const hint=document.getElementById("gameHint");
+  const rewards=document.getElementById("rewards");
   gameArea.innerHTML="";
 
   if(currentGame===0){
     title.textContent="Breathe with me";
     hint.textContent="In as it grows, out as it shrinks.";
-    const circle = document.createElement("div"); circle.className="circle"; gameArea.appendChild(circle);
+    const circle=document.createElement("div"); circle.className="circle"; gameArea.appendChild(circle);
     setTimeout(()=>{giveReward(); currentGame++; startGame();},12000);
   } else {
     title.textContent="Slow Focus";
@@ -208,7 +235,7 @@ function startGame(){
 }
 
 function spawnDot(){
-  const dot = document.createElement("div");
+  const dot=document.createElement("div");
   dot.className="focus-dot";
   dot.style.left=Math.random()*80+"%";
   dot.style.top=Math.random()*60+"%";
@@ -219,8 +246,8 @@ function spawnDot(){
 }
 
 function giveReward(){
-  const rewards = document.getElementById("rewards");
-  const star = document.createElement("span"); star.className="reward-star"; star.textContent="★";
+  const rewards=document.getElementById("rewards");
+  const star=document.createElement("span"); star.className="reward-star"; star.textContent="★";
   rewards.appendChild(star);
 }
 </script>
