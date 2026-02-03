@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>Calmify</title>
+<!-- Google Fonts for Lemon Milk Pro substitute -->
+<link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
 <style>
 /* --- BODY & BACKGROUND --- */
 body {
   margin: 0;
-  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-family: 'Righteous', cursive; /* substitute for Lemon Milk Pro */
   background: linear-gradient(to bottom, #b0e0f0, #e0f7fa);
   color: #022c3a;
   overflow: hidden;
@@ -43,12 +45,18 @@ body {
 
 /* --- CHIBI AVATAR --- */
 .avatar {
-  width: 120px;
-  height: 140px;
+  width: 140px;
+  height: 160px;
   margin-bottom: 20px;
 }
 .avatar svg {display:block; animation: float 3s ease-in-out infinite;}
 @keyframes float {0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+
+/* --- AVATAR ANIMATIONS --- */
+@keyframes waveArm {0%,100%{transform:rotate(0deg);}50%{transform:rotate(15deg);}}
+.arm {transform-origin: top center; animation: waveArm 2s ease-in-out infinite;}
+.blink {animation: blinkEyes 5s infinite;}
+@keyframes blinkEyes {0%,90%,100%{opacity:1;}95%{opacity:0;}}
 
 /* --- CARDS --- */
 .card {
@@ -103,11 +111,18 @@ button:hover {transform:translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,0.3)
 <div id="startScreen" class="screen">
   <div class="avatar">
     <svg viewBox="0 0 100 140" width="100" height="140">
+      <!-- Body -->
       <ellipse cx="50" cy="110" rx="25" ry="30" fill="#34d399"/>
+      <!-- Head -->
       <circle cx="50" cy="50" r="30" fill="#fff"/>
-      <circle cx="40" cy="45" r="5" fill="#022c3a"/>
-      <circle cx="60" cy="45" r="5" fill="#022c3a"/>
+      <!-- Eyes -->
+      <circle cx="40" cy="45" r="5" fill="#022c3a" class="blink"/>
+      <circle cx="60" cy="45" r="5" fill="#022c3a" class="blink"/>
+      <!-- Mouth -->
       <path d="M40 60 Q50 70 60 60" stroke="#022c3a" stroke-width="2" fill="none"/>
+      <!-- Arms -->
+      <line x1="25" y1="90" x2="10" y2="70" stroke="#34d399" stroke-width="5" class="arm"/>
+      <line x1="75" y1="90" x2="90" y2="70" stroke="#34d399" stroke-width="5" class="arm"/>
     </svg>
   </div>
   <h1>Welcome to Calmify</h1>
@@ -121,9 +136,11 @@ button:hover {transform:translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,0.3)
     <svg viewBox="0 0 100 140" width="100" height="140">
       <ellipse cx="50" cy="110" rx="25" ry="30" fill="#34d399"/>
       <circle cx="50" cy="50" r="30" fill="#fff"/>
-      <circle cx="40" cy="45" r="5" fill="#022c3a"/>
-      <circle cx="60" cy="45" r="5" fill="#022c3a"/>
+      <circle cx="40" cy="45" r="5" fill="#022c3a" class="blink"/>
+      <circle cx="60" cy="45" r="5" fill="#022c3a" class="blink"/>
       <path d="M40 60 Q50 70 60 60" stroke="#022c3a" stroke-width="2" fill="none"/>
+      <line x1="25" y1="90" x2="10" y2="70" stroke="#34d399" stroke-width="5" class="arm"/>
+      <line x1="75" y1="90" x2="90" y2="70" stroke="#34d399" stroke-width="5" class="arm"/>
     </svg>
   </div>
   <div class="card">
@@ -139,9 +156,11 @@ button:hover {transform:translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,0.3)
     <svg viewBox="0 0 100 140" width="100" height="140">
       <ellipse cx="50" cy="110" rx="25" ry="30" fill="#34d399"/>
       <circle cx="50" cy="50" r="30" fill="#fff"/>
-      <circle cx="40" cy="45" r="5" fill="#022c3a"/>
-      <circle cx="60" cy="45" r="5" fill="#022c3a"/>
+      <circle cx="40" cy="45" r="5" fill="#022c3a" class="blink"/>
+      <circle cx="60" cy="45" r="5" fill="#022c3a" class="blink"/>
       <path d="M40 60 Q50 70 60 60" stroke="#022c3a" stroke-width="2" fill="none"/>
+      <line x1="25" y1="90" x2="10" y2="70" stroke="#34d399" stroke-width="5" class="arm"/>
+      <line x1="75" y1="90" x2="90" y2="70" stroke="#34d399" stroke-width="5" class="arm"/>
     </svg>
   </div>
   <div class="card">
@@ -160,7 +179,6 @@ const passages = [
   "Pause if needed. Your voice guides your calm. You are safe."
 ];
 let voiceTimer = 0;
-let currentGame = 0;
 let audioCtx, ambientGain;
 
 // === AMBIENT MUSIC ===
@@ -169,7 +187,6 @@ function startAmbient() {
   ambientGain = audioCtx.createGain();
   ambientGain.gain.value = 0.15;
   ambientGain.connect(audioCtx.destination);
-
   for(let i=0;i<3;i++){
     const osc = audioCtx.createOscillator();
     osc.type = "sine";
